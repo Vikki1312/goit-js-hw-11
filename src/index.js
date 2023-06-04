@@ -31,6 +31,7 @@ async function onSubmit(evt) {
     const response = await searchImages(query, page);
     galleryEl.innerHTML = '';
     createMarkup(response.data.hits);
+    Notiflix.Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
     totalPage = response.data.totalHits / perPage;
     simpleLightbox.refresh();
 
