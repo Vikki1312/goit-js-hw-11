@@ -7,10 +7,10 @@ const formEl = document.getElementById('search-form');
 const galleryEl = document.getElementById('gallery');
 const btnLoad = document.querySelector('.load-more');
 
-// const simpleLightbox = new SimpleLightbox('.gallery a', {
-//   captionsData: 'alt',
-//   captionDelay: 250,
-// });
+const simpleLightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 formEl.addEventListener('submit', onSubmit);
 let page = 1;
@@ -32,7 +32,7 @@ async function onSubmit(evt) {
     galleryEl.innerHTML = '';
     createMarkup(response.data.hits);
     totalPage = response.data.totalHits / perPage;
-    SimpleLightbox.refresh();
+    simpleLightbox.refresh();
 
     if (response.data.hits.length === 0) {
       btnLoad.classList.add('is-hidden');
@@ -68,6 +68,7 @@ function createMarkup(gallery) {
       }) => {
         return `
           <li class="photo-card">
+<a class='gallery-link link' href='${largeImageURL}'>
 <img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -87,6 +88,7 @@ function createMarkup(gallery) {
       ${downloads}
     </p>
   </div>
+</a>
   
 </li>`;
       }
@@ -100,6 +102,7 @@ async function onLoadMoreBtnClick() {
   try {
     const response = await searchImages(query, page);
     createMarkup(response.data.hits);
+    simpleLightbox.refresh();
     if (totalPage < page) {
       Notiflix.Notify.info(
         "We're sorry, but you've reached the end of search results."
