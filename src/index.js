@@ -1,9 +1,16 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const formEl = document.getElementById('search-form');
 const galleryEl = document.getElementById('gallery');
 const btnLoad = document.querySelector('.load-more');
+
+// const simpleLightbox = new SimpleLightbox('.gallery a', {
+//   captionsData: 'alt',
+//   captionDelay: 250,
+// });
 
 formEl.addEventListener('submit', onSubmit);
 let page = 1;
@@ -16,15 +23,23 @@ async function onSubmit(evt) {
 
   page = 1;
   query = evt.currentTarget.elements.searchQuery.value;
-
+  if (!query.trim()) {
+    Notiflix.Notify.failure('Enter your request');
+    return;
+  }
   try {
     const response = await searchImages(query, page);
+    galleryEl.innerHTML = '';
     createMarkup(response.data.hits);
     totalPage = response.data.totalHits / perPage;
+    SimpleLightbox.refresh();
+
     if (response.data.hits.length === 0) {
-      return Notiflix.Notify.failure(
+      btnLoad.classList.add('is-hidden');
+      Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+      return;
     }
     btnLoad.classList.remove('is-hidden');
     btnLoad.addEventListener('click', onLoadMoreBtnClick);
@@ -53,7 +68,7 @@ function createMarkup(gallery) {
       }) => {
         return `
           <li class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+<img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -72,6 +87,7 @@ function createMarkup(gallery) {
       ${downloads}
     </p>
   </div>
+  
 </li>`;
       }
     )
