@@ -2,10 +2,15 @@
   <input
     type="text"
     name="searchQuery"
+    class="search-form-input"
     autocomplete="off"
     placeholder="Search images..."
   />
-  <button type="submit">Search</button>
+  <button type="submit" class="search-form-btn">Search</button>
 </form>
-<ul class="gallery" id="gallery"></ul>
-<button type="button" class="load-more is-hidden">Load more</button>
+<section class="section-gallery">
+  <div class="container">
+    <ul class="gallery list" id="gallery"></ul>
+    <button type="button" class="load-more is-hidden">Load more</button>
+  </div>
+</section>
