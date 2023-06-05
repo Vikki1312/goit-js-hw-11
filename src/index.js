@@ -20,30 +20,37 @@ let perPage = 40;
 
 async function onSubmit(evt) {
   evt.preventDefault();
+  btnLoad.classList.add('is-hidden');
 
   page = 1;
   query = evt.currentTarget.elements.searchQuery.value;
   if (!query.trim()) {
-    Notiflix.Notify.failure('Enter your request');
+    Notiflix.Notify.failure('Enter your request', { clickToClose: true });
     return;
   }
   try {
     const response = await searchImages(query, page);
-    galleryEl.innerHTML = '';
-    createMarkup(response.data.hits);
-    Notiflix.Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
-    totalPage = response.data.totalHits / perPage;
-    simpleLightbox.refresh();
-
     if (response.data.hits.length === 0) {
-      btnLoad.classList.add('is-hidden');
+      galleryEl.innerHTML = '';
       Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
+        'Sorry, there are no images matching your search query. Please try again.',
+        { clickToClose: true }
       );
       return;
     }
-    btnLoad.classList.remove('is-hidden');
-    btnLoad.addEventListener('click', onLoadMoreBtnClick);
+    galleryEl.innerHTML = '';
+    createMarkup(response.data.hits);
+    Notiflix.Notify.info(
+      `Hooray! We found ${response.data.totalHits} images.`,
+      { clickToClose: true }
+    );
+    totalPage = response.data.totalHits / perPage;
+    simpleLightbox.refresh();
+
+    if (!(response.data.totalHits <= 40)) {
+      btnLoad.classList.remove('is-hidden');
+      btnLoad.addEventListener('click', onLoadMoreBtnClick);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -106,7 +113,8 @@ async function onLoadMoreBtnClick() {
     simpleLightbox.refresh();
     if (totalPage < page) {
       Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
+        "We're sorry, but you've reached the end of search results.",
+        { clickToClose: true }
       );
       btnLoad.classList.add('is-hidden');
       btnLoad.removeEventListener('click', onLoadMoreBtnClick);
